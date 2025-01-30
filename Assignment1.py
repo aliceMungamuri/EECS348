@@ -102,5 +102,7 @@ def process_commands(filename):
             elif command == "COUNT":
                 print(f"There are {len(inbox)} emails to read.")
 
-if __name__ == "__main__":
+def main ():
     process_commands("Assignment1_Test_File.txt")
+
+main()
