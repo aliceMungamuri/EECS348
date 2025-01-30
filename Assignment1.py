@@ -1,20 +1,20 @@
 # EECS 348 Assignment 1
-# CEO Email Prioritization Program
-# Author: Alice J Mungamuri
-# Creation Date: January 30, 2025
-# Description: This program implements a priority queue for email management using a MaxHeap.
-# Inputs: Reads commands from 'Assignment1_Test_File.txt'.
-# Outputs: Displays the next email and count of unread emails.
+# CEO EMAIL Prioritization Program
+# Student ID = 3117704
+# Author: Alice Mungamuri
+# Creation Date: 1/ 30/2025
+# Description: Inbow mail info
+# Inputs: Reads  Assignment1_Test_File.txt. Output: next email and num unread
 
-class Email: # instantiates the class 
-    def __init__(self, catSender, subject, date, arrival_order): # catSender = the category of the sender - these are all the parameters
+class EMAIL: # instantiates the class 
+    def __init__(self, catSender, subject, date, order): # catSender = the category of the sender - these are all the parameters
         self.catSender = catSender  # all of these isassigning the variable to the self property of the object - is it necessary to comment it for each of the variables because its the same thing
         self.subject = subject # same thing as above 
         self.date = date# same thing as above 
-        self.arrival_order = arrival_order# same thing as above 
-        self.priority = self.calculate_priority()# this is to set it the the output bc we need to determine the priority after
+        self.order = order# same thing as above 
+        self.priority = self.getPriority()# this is to set it the the output bc we need to determine the priority after
     
-    def calculate_priority(self): # function to assign  priority 0 just saying that Boss is first - otherperson is the lowest
+    def getPriority(self): # function to assign  priority 0 just saying that Boss is first - otherperson is the lowest
         priority_map = {
             "Boss": 5, # these are all just the assigned values in order of importance
             "Subordinate": 4,
@@ -22,10 +22,10 @@ class Email: # instantiates the class
             "ImportantPerson": 2,
             "OtherPerson": 1
         }
-        return (priority_map[self.catSender], self.date, -self.arrival_order)  # this whole thing is to push the most recent emails first - using the arrival order
+        return (priority_map[self.catSender], self.date, -self.order)  # this whole thing is to push the most recent emails first - using the arrival order
 
     def __lt__(self, other): # using the magic methods less than operatos
-        return self.priority < other.priority # compares those 2 objects in the  Email class
+        return self.priority < other.priority # compares those 2 objects in the  EMAIL class
 
     def __str__(self): # just an easier way to print with all those variables 
         return f"Sender: {self.catSender}\nSubject: {self.subject}\nDate: {self.date}" 
@@ -41,34 +41,34 @@ class MaxHeap:
     def pop(self): # removing from the heap - from 268 MaxHeap project - this method just removes/ returns the highest prioty email 
         if len(self.heap) > 1: # if theres mult emails
             self._swap(0, len(self.heap) - 1) # swaps the root to the last element - len - 1
-            max_email = self.heap.pop() 
+            maxEm = self.heap.pop() 
             self.downHeap(0) # 
         elif self.heap: # if theres just one element
-            max_email = self.heap.pop() # removed
+            maxEm = self.heap.pop() # removed
         else: # this is just in case its empty
             return None # itll return None 
-        return max_email # returning the max email
+        return maxEm # returning the max email
     
     def peek(self): # returns the root whhich is a lso the highest prioriyt - if its empty then None
         return self.heap[0] if self.heap else None # explained in the above
     
     def upHeap(self, index):  # upehap function
-        parent = (index - 1) // 2 # this gets the parent index of a given node
+        biggest = (index - 1) // 2 # this gets the parent index of a given node
         while index > 0 and self.heap[index] > self.heap[parent]: # this will loop while the node isnt at the root and has a higher priorotu than the parent
-            self._swap(index, parent) # keeps the order in the heap swaps child w parent
-            index = parent # updates to move up the heap 
-            parent = (index - 1) // 2 # has ot redo the parent index for the next time
+            self._swap(index, biggest) # keeps the order in the heap swaps child w parent
+            index = biggest # updates to move up the heap 
+            biggest = (index - 1) // 2 # has ot redo the parent index for the next time
     
     def downHeap(self, index):
-        child = 2 * index + 1 # this gets the left child index of the node
-        while child < len(self.heap): # if at least one child itll look
-            if child + 1 < len(self.heap) and self.heap[child + 1] > self.heap[child]: # if right has higher proority than ledt update child to be right
-                child += 1
-            if self.heap[index] > self.heap[child]: # this ends the loop cur nod is> the highest priority child
+        smaller = 2 * index + 1 # this gets the left child index of the node
+        while smaller < len(self.heap): # if at least one child itll look
+            if smaller + 1 < len(self.heap) and self.heap[smaller + 1] > self.heap[smaller]: # if right has higher proority than ledt update child to be right
+                smaller += 1
+            if self.heap[index] > self.heap[smaller]: # this ends the loop cur nod is> the highest priority child
                 break # ends loop
-            self._swap(index, child) # swaps cur node and highest priority child
-            index = child # updates index so it cont down heap
-            child = 2 * index + 1 # you have to recalculate the left child for next time
+            self._swap(index, smaller) # swaps cur node and highest priority child
+            index = smaller # updates index so it cont down heap
+            smaller = 2 * index + 1 # you have to recalculate the left child for next time
     
     def _swap(self, i, j): # this is just to swap the elements at  iand j in heap
         self.heap[i], self.heap[j] = self.heap[j], self.heap[i] # look at above
@@ -78,7 +78,7 @@ class MaxHeap:
 
 def process_commands(filename): # this is the big one - it does all the coomands
     inbox = MaxHeap()
-    arrival_order = 0 # makes the order counter 0
+    order = 0 # makes the order counter 0
     
     with open(filename, 'r') as file: # this is just cookie cutter open file and go through each line and read - courtesy 268
         for line in file:
@@ -88,9 +88,9 @@ def process_commands(filename): # this is the big one - it does all the coomands
             if command == "EMAIL": # means to process it as a new email
                 catSender, subject, date = parts # takes the sender category subj and date
                 catSender = catSender.split()[1]  # Extract actual category
-                email = Email(catSender, subject, date, arrival_order) # takes the actual category from the string
+                email = EMAIL(catSender, subject, date, order) # takes the actual category from the string
                 inbox.push(email) # new email into the maxheap
-                arrival_order += 1 # increment
+                order += 1 # increment
             elif command == "NEXT": # display the highest priority emal
                 next_email = inbox.peek() # looks at it
                 print("Next email:") # just printing that to go with how the example gave the output
