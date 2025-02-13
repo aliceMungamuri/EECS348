@@ -44,6 +44,7 @@ def main():
             print(f"Line {i+1}: no match found")
 
 main()
+
 import re  # this imports the regex module from Python for pattern matching
 
 def getLine(line, regexPttrn):  # gets a string from the file and then the regex pattern
@@ -60,29 +61,31 @@ def main():
         lines = file.readlines()  # reads the lines of the file, one by one
     
     patterns = [  # list of regular expressions for pattern matching
-        r"^ac",           # Matches any line starting with 'ac'
-        r"^acd",          # Matches any line starting with 'acd'
-        r"^acde",         # Matches any line starting with 'acde'
+        r"ac",           # Matches line with ac in it
+        r"b",           # Matches line with a b in it
+        r"^acd",          # Matches any line starting with acd
+        r"^acde",         # Matches any line starting with acde
         r"^a$",           # Matches 'a' at the beginning and end of a line
-        r"^nal",          # Matches any line starting with 'nal'
-        r"^abc",          # Matches any line starting with 'abc'
-        r"^ab",           # Matches any line starting with 'ab'
-        r"^a$",           # Matches line ending with 'a'
-        r"^.*a$",         # Matches lines that end with 'a'
-        r"^main$",        # Matches the exact string 'main' at the start and end
-        r"^woman$",       # Matches the exact string 'woman'
-        r"^abracadabra$", # Matches the string 'abracadabra'
-        r"[a-fxY8-9]",    # Matches any character in the range a-f, x, Y, or digits 8-9
-        r"^My dog has fleas.$",  # Matches the exact string 'My dog has fleas.'
-        r"^.*a$",         # Matches strings that end with 'a'
-        r"^.*\d$",        # Matches strings that end with a digit
-        r"^.*b$",         # Matches strings that end with 'b'
-        r"\bDoge\b",      # Matches the exact word 'Doge' (with word boundaries)
-        r"r.*b",          # Matches lines that contain 'r' followed by any characters and then 'b'
-        r"\d",            # Matches any single digit
-        r"\s",            # Matches any whitespace character
-        r"ex?a",          # Matches 'ex' followed by zero or one 'a'
-        r"\\we",          # Matches the literal string '\we'
+        r"^a",           # Matches line with a b in it
+        r"^ab",           # Matches line starting with an ab in it
+        r"ma+n",           # Matches line with a ma directly in front of an n
+        r"..",           # idek is it matching any single character
+        r"^abra", # Matches the stringabre at the beginning
+        r"abra$", # Matches the stringabre at the end
+        r"ca.", # gets the ca followed by a singular character
+        r"r.*b", # gets the acadabra 
+        r"cx?a", # gets the ca in abracadabra
+        r"[a-fxY0-9]",    # a through f and XY and then 0-9
+        r"[^a-fxY0-9]",    # a through f and XY and then 0-9 at the beginning
+        r"flea|tick",    # gets flea
+        r"(My|Your) (dog|cat)",    # gets flea
+        r"\bDogg\b",      # Matches the exact word 'Doge' (with word boundaries)
+        r"\d",      # gets first digit
+        r"\s",      # gets first space
+        r"\w+",      # gets first word
+
+
+        
     ]
     
     for i, line in enumerate(lines):  # keeps track by index (i) and lines
