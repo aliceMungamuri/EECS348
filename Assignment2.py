@@ -35,7 +35,7 @@ def main():
         r"\bDogg\b",      # Matches the exact word 'Doge' (with word boundaries)
         r"\d",      # gets first digit
         r"\s",      # gets first space
-        r"\w+",      # gets first word
+        r"\w+"      # gets first word
 
 
         
