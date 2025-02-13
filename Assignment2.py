@@ -1,7 +1,7 @@
 import re  # this imports the regex module from Python for pattern matching
 
 def getLine(line, regexPttrn):  # gets a string from the file and then the regex pattern
-    """Applies a regex pattern to a line and returns the matched substring or 'no match found'."""
+    
     posMatch = re.search(regexPttrn, line)  # looks for the match in the line using the pattern
     if posMatch:  # if the match is found, posMatch is valid and takes the substring that matched the regex pattern
         return posMatch.group()
@@ -9,7 +9,7 @@ def getLine(line, regexPttrn):  # gets a string from the file and then the regex
         return "no match found"  # if no match, return "no match found"
 
 def main():
-    """Reads the test file and applies regex patterns to each line."""
+  
     with open("Assignment2_Test_File.txt", "r") as file:  # opens the test file
         lines = file.readlines()  # reads the lines of the file, one by one
     
