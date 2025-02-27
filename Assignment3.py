@@ -7,55 +7,53 @@ Student ID: 3117704
 Date: February 27, 2025
 
 Inputs:
-- A filename provided by the user.
-- A regex pattern entered in the format /pattern/.
+filename
+the regex pattern but user has to give it /..../
 
 Outputs:
 - Prints each line number and all matches found in that line.
-- Prints "no match found" for lines without matches.
+otherwise No Match FOud
 
 Sources:
-- Python documentation for regex (`re` module)
-- Stack Overflow for regex validation examples
+- Stack Overflow how to validate
 - ChatGPT for regex logic refinement
+- TA
 """
 
 # Step 1: Get the filename from the user
 filename = input("Enter the filename: ")
 
 try:
-    # Try opening the file
+    # I just used the try except to try an open the filename given by input from the user  - error if invalud
     with open(filename, "r") as file:
         lines = file.readlines()  # Read all lines from the file
 except FileNotFoundError:
-    print("Unable to open file.")
-    exit()  # Exit the program if the file cannot be opened
+    print("Cannot open file.")
+    exit()  # Exit the program
 
-# Step 2: Get the regex pattern from the user
-regex_input = input("Enter a regex pattern in the format /pattern/: ")
+# Get regex pattern from the user
+regexUser = input("Enter a regex pattern in the format /pattern/: ")
 
-# Ensure the regex is correctly formatted with slashes
-if not (regex_input.startswith("/") and regex_input.endswith("/")):
+# correctly inputted check
+if not (regexUser.startswith("/") and regexUser.endswith("/")):
     print("Invalid regex pattern.")
     exit()
 
-# Extract the actual regex pattern by removing the surrounding slashes
-regex_pattern = regex_input[1:-1]
+# Extract the actual regex pattern strip the first and last
+regex_pattern = regexUser[1:-1]
 
-# Step 3: Validate the regex pattern
+# validationt
 try:
-    compiled_regex = re.compile(regex_pattern)  # Compile the regex pattern
+    compiled_regex = re.compile(regex_pattern)  # Compile the regex pattern , this was helped by TA in class
 except re.error:
-    print("Invalid regex pattern.")
+    print("Invalid regex pattern.") # try except if its not valid as per assignment
     exit()
 
 # Function to find all matches in a given line
 def find_matches(line, regex):
     """
     Searches for all occurrences of the regex pattern in the given line.
-    :param line: A single line of text.
-    :param regex: The compiled regex pattern.
-    :return: A list of matches or ["no match found"] if none exist.
+
     """
     matches = regex.findall(line)  # Find all matches in the line
     if matches:
