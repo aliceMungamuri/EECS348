@@ -1,14 +1,10 @@
 import re  # Import regex module
 
 """
-EECS 348 Assignment 3 - Regex File Searcher
+EECS 348 Assignment 3 
 Author: Alice J Mungamuri
-Student ID: XXXXXX
+Student ID: 3117704
 Date: February 27, 2025
-
-Description:
-This program reads a user-specified file and searches for occurrences of a user-specified regex pattern.
-It prints all matches found on each line or "no match found" if none exist.
 
 Inputs:
 - A filename provided by the user.
