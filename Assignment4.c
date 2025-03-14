@@ -26,18 +26,50 @@ int getPriority(const char *category) {
     return 1; // "OtherPerson"
 }
 
-// Comparison function for sorting emails in priority order
-int compareEmails(const void *a, const void *b) {
-    EMAIL *emailA = (EMAIL *)a;
-    EMAIL *emailB = (EMAIL *)b;
+// Swap function for heap
+void swap(EMAIL *a, EMAIL *b) {
+    EMAIL temp = *a;
+    *a = *b;
+    *b = temp;
+}
 
-    if (emailA->priority != emailB->priority) 
-        return emailB->priority - emailA->priority; // Higher priority first
+// Maintain max-heap property after insertion
+void upHeap(int index) {
+    int parent = (index - 1) / 2;
+    while (index > 0 && heap[index].priority >= heap[parent].priority) {
+        if (heap[index].priority > heap[parent].priority || strcmp(heap[index].date, heap[parent].date) > 0) {
+            swap(&heap[index], &heap[parent]);
+        }
+        index = parent;
+        parent = (index - 1) / 2;
+    }
+}
 
-    int dateCompare = strcmp(emailB->date, emailA->date); // Newest first
-    if (dateCompare != 0) return dateCompare;
+// Maintain max-heap property after deletion
+void downHeap(int index) {
+    int leftChild, rightChild, largest;
+    while (1) {
+        leftChild = 2 * index + 1;
+        rightChild = 2 * index + 2;
+        largest = index;
 
-    return emailA->order - emailB->order; // Oldest first for same priority
+        if (leftChild < heapSize && 
+           (heap[leftChild].priority > heap[largest].priority || 
+           (heap[leftChild].priority == heap[largest].priority && strcmp(heap[leftChild].date, heap[largest].date) > 0))) {
+            largest = leftChild;
+        }
+
+        if (rightChild < heapSize && 
+           (heap[rightChild].priority > heap[largest].priority || 
+           (heap[rightChild].priority == heap[largest].priority && strcmp(heap[rightChild].date, heap[largest].date) > 0))) {
+            largest = rightChild;
+        }
+
+        if (largest == index) break;
+
+        swap(&heap[index], &heap[largest]);
+        index = largest;
+    }
 }
 
 // Insert email into heap
@@ -46,8 +78,9 @@ void pushEmail(EMAIL email) {
         printf("Heap is full, cannot add more emails.\n");
         return;
     }
-    heap[heapSize++] = email;
-    qsort(heap, heapSize, sizeof(EMAIL), compareEmails);  // Maintain heap order
+    heap[heapSize] = email;
+    upHeap(heapSize);
+    heapSize++;
 }
 
 // Remove and return the highest priority email
@@ -56,11 +89,8 @@ EMAIL popEmail() {
     if (heapSize == 0) return empty;
 
     EMAIL topEmail = heap[0];
-
-    for (int i = 1; i < heapSize; i++) {
-        heap[i - 1] = heap[i];  // Shift elements left
-    }
-    heapSize--;
+    heap[0] = heap[--heapSize];  // Move last email to root
+    downHeap(0);
     return topEmail;
 }
 
