@@ -53,51 +53,51 @@ Email peekEmail() { // returns the highest priority email - doesnt remove it
     return emailQueue.top();
 }
 
-void processCommands(const string& filename) {
-    ifstream file(filename);
+void processCommands(const string& filename) { // void funct to process commands
+    ifstream file(filename); // opens file with commands
     if (!file) {
-        cerr << "Error: Could not open file " << filename << endl;
+        cerr << "Error: Could not open file " << filename << endl; // error if cant be opened print that message and exits
         return;
     }
 
-    string line;
-    int order = 0;
+    string line; // var line is a string
+    int order = 0; // init
 
-    while (getline(file, line)) {
-        istringstream iss(line);
-        string command;
+    while (getline(file, line)) { // reads each line from file
+        istringstream iss(line); // process line
+        string command; // extracts first word for command
         iss >> command;
 
-        if (command == "EMAIL") {
-            string catSender, subject, date;
+        if (command == "EMAIL") { // if to process email commad
+            string catSender, subject, date; // EMAIL command parameters
             getline(iss, catSender, ',');
             getline(iss, subject, ',');
             getline(iss, date);
 
-            Email email{catSender, subject, date, order++, getPriority(catSender)};
-            pushEmail(email);
-        } else if (command == "NEXT") {
-            Email nextEmail = peekEmail();
+            Email email{catSender, subject, date, order++, getPriority(catSender)}; // EMAIL obj
+            pushEmail(email); // insert into queue
+        } else if (command == "NEXT") { // if next
+            Email nextEmail = peekEmail(); // gets the next highest priority email in queu
             if (nextEmail.order != -1) {
                 cout << "Next email:\nSender: " << nextEmail.catSender << "\nSubject: " << nextEmail.subject << "\nDate: " << nextEmail.date << "\n";
-            } else {
-                cout << "No emails.\n";
+            } else { // cout abouve printed the sender subj and date
+                cout << "No emails.\n"; // nothing there so print no emails
             }
-        } else if (command == "READ") {
+        } else if (command == "READ") { // removes and processes the highest priority email
             Email readEmail = popEmail();
-            if (readEmail.order != -1) {
+            if (readEmail.order != -1) { // starting from back
                 cout << "Reading email from: " << readEmail.catSender << endl;
             } else {
-                cout << "No emails.\n";
+                cout << "No emails.\n"; // nothing there = no emaile
             }
-        } else if (command == "COUNT") {
-            cout << "There are " << emailQueue.size() << " emails to read.\n";
+        } else if (command == "COUNT") { // just count
+            cout << "There are " << emailQueue.size() << " emails to read.\n"; // print num of emails in the queue
         }
     }
-    file.close();
+    file.close(); // close file
 }
 
-int main() {
-    processCommands("Assignment4_Test_File.txt");
-    return 0;
+int main() { // main funct
+    processCommands("Assignment5_Test_File.txt");
+    return 0; // close the program it ran
 }
