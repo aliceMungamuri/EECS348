@@ -1,18 +1,18 @@
-#include <iostream>
-#include <fstream>
-#include <queue>
-#include <string>
-#include <vector>
-#include <sstream>
+#include <iostream> // input output operations
+#include <fstream> // file read/write
+#include <queue> // provide access to the priority_queue data structure
+#include <string> // so you can use strings
+#include <vector> //nor used in this code 
+#include <sstream> //process strings like file lines
 
-using namespace std;
+using namespace std; // we saw this in lab so std:: cout not necessary cout
 
 struct Email {
-    string catSender;
-    string subject;
+    string catSender; // category of sender
+    string subject; // subject of the email
     string date; // MM-DD-YYYY format
-    int order;
-    int priority;
+    int order; // order of the email received
+    int priority; // higher num = higher priority
 
     // Operator overloading for priority queue (max-heap behavior)
     bool operator<(const Email& other) const {
@@ -24,31 +24,31 @@ struct Email {
 };
 
 int getPriority(const string& category) {
-    if (category == "Boss") return 5;
+    if (category == "Boss") return 5; // highest to lowest - start at boss
     if (category == "Subordinate") return 4;
     if (category == "Peer") return 3;
-    if (category == "ImportantPerson") return 2;
+    if (category == "ImportantPerson") return 2; //
     return 1; // "OtherPerson"
 }
 
-priority_queue<Email> emailQueue;
+priority_queue<Email> emailQueue; // priority 
 
-void pushEmail(const Email& email) {
+void pushEmail(const Email& email) { // this  function is made to insert the an Email into the priority queue
     emailQueue.push(email);
 }
 
-Email popEmail() {
-    if (emailQueue.empty()) {
+Email popEmail() {// removes at the top of the queue
+    if (emailQueue.empty()) { //  from Stack overflow -  removes highest priority email basically if it is empty it returns a dummy email with the -1 values
         return {"", "", "", -1, -1};
     }
     Email topEmail = emailQueue.top();
     emailQueue.pop();
-    return topEmail;
+    return topEmail; // returns the topMail
 }
 
-Email peekEmail() {
+Email peekEmail() { // returns the highest priority email - doesnt remove it
     if (emailQueue.empty()) {
-        return {"", "", "", -1, -1};
+        return {"", "", "", -1, -1}; // dummy email if stack is empty - basically 
     }
     return emailQueue.top();
 }
