@@ -1,1 +1,29 @@
+Simulating the execution of Assignment5.exe...
+
+--- Processing Email ---
+Email added: 
+Sender: Boss
+Subject: Urgent Meeting
+Date: 03-26-2025
+Priority: 5
+
+Email added:
+Sender: Peer
+Subject: Weekly Report
+Date: 03-27-2025
+Priority: 3
+
+--- Next Email ---
+Next email:
+Sender: Boss
+Subject: Urgent Meeting
+Date: 03-26-2025
+
+--- Reading Email ---
+Reading email from: Boss
+
+--- Count ---
+There are 1 emails to read.
+
+Simulating end of execution...
 
