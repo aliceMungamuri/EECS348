@@ -1,52 +1,50 @@
-// EECS 348 Assignment 6 - Sudoku Solver
-// Description: Solves a 9x9 Sudoku puzzle using backtracking.
+// EECS 348 Assignment 6 
 // Input: A file containing a Sudoku grid with '_' for blanks.
 // Output: The original puzzle and all possible solutions.
 // Author: Alice J Mungamuri
-// Creation Date: April 10, 2025
-// Collaborators: None
-// Other sources: ChatGPT (OpenAI), C++ documentation
+//  April 10, 2025
+// Other sources: Stack OVerfoow (vectors )ChatGPT (OpenAI), C++ documentation - a little cclaude ai
 
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <string>
 
-class SudokuSolver {
+class SudokuSolver { // class sudoku solver - courtesy stack overflow :)
 private:
-    std::vector<std::vector<char>> grid;
-    int solutions = 0;
+    std::vector<std::vector<char>> grid; //grid: holds the current state of the puzzle
+    int solutions = 0; //solutions: counts how many  solutions have been found
 
 public:
     // Constructor: loads grid from file
-    SudokuSolver(const std::string& filename) {
-        std::ifstream inFile(filename);
+    SudokuSolver(const std::string& filename) { //Opens the input file
+        std::ifstream inFile(filename); // If it fails to ope
         if (!inFile) {
-            std::cerr << "Error opening file " << filename << std::endl;
-            exit(1);
+            std::cerr << "Error opening file " << filename << std::endl; //it prints an error
+            exit(1); //exits
         }
 
-        std::string line;
-        while (std::getline(inFile, line)) {
-            std::vector<char> row;
-            for (char ch : line) {
+        std::string line; //  Reads the file line by line
+        while (std::getline(inFile, line)) { // //  line by line
+            std::vector<char> row; //extracts non-space characters 
+            for (char ch : line) { // for char in line pulls each 
                 if (ch != ' ' && ch != '\n') {
-                    row.push_back(ch);
+                    row.push_back(ch); 
                 }
             }
-            if (!row.empty()) grid.push_back(row);
+            if (!row.empty()) grid.push_back(row); //builds the 2D grid.
         }
 
-        inFile.close();
+        inFile.close(); // close the file
 
-        if (grid.size() != 9 || grid[0].size() != 9) {
-            std::cerr << "Invalid puzzle size in " << filename << std::endl;
-            exit(1);
+        if (grid.size() != 9 || grid[0].size() != 9) { //is the puzzle is 9x9
+            std::cerr << "Invalid puzzle size in " << filename << std::endl; // makes sure its valid
+            exit(1); // exit
         }
     }
 
-    // Print the Sudoku grid
-    void print_matrix() const {
+    
+    void print_matrix() const { // Print the Sudoku grid
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 std::cout << grid[i][j] << " ";
@@ -55,22 +53,22 @@ public:
         }
     }
 
-    // Check if placing a number at (r, c) is valid
-    bool is_valid(int r, int c) const {
+  
+    bool is_valid(int r, int c) const {  // Check if placing a number at (r, c) is valid
         char num = grid[r][c];
 
-        // Check row
-        for (int j = 0; j < 9; j++) {
+     
+        for (int j = 0; j < 9; j++) {   // Check row
             if (j != c && grid[r][j] == num) return false;
         }
 
-        // Check column
-        for (int i = 0; i < 9; i++) {
+     
+        for (int i = 0; i < 9; i++) {   // Check column
             if (i != r && grid[i][c] == num) return false;
         }
 
-        // Check 3x3 box
-        int boxRow = r - r % 3;
+     
+        int boxRow = r - r % 3;   // Check 3x3 box
         int boxCol = c - c % 3;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -83,8 +81,9 @@ public:
         return true;
     }
 
-    // Recursive backtracking solver
-    void solve_recursive(int r, int c) {
+    
+    void solve_recursive(int r, int c) {// Recursive backtracking solver
+    
         if (r == 9) {
             print_matrix();
             std::cout << std::endl;
@@ -108,8 +107,8 @@ public:
         }
     }
 
-    // Solve entry point
-    void solve(const std::string& filename) {
+   
+    void solve(const std::string& filename) { // Solve entry point
         std::cout << "Puzzle: " << filename << "\n\n";
         print_matrix();
         std::cout << "\nSolutions:\n";
@@ -123,9 +122,8 @@ public:
     }
 };
 
-// Main function to run all puzzles
 int main() {
-    std::vector<std::string> files = {
+    std::vector<std::string> files = {// Main function to run all puzzles
         "puzzle1.txt",
         "puzzle2.txt",
         "puzzle3.txt",
