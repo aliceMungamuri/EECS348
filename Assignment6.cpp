@@ -45,7 +45,7 @@ public:
 
     
     void print_matrix() const { // Print the Sudoku grid
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 9; i++) { // print ing the gir row by col
             for (int j = 0; j < 9; j++) {
                 std::cout << grid[i][j] << " ";
             }
@@ -55,8 +55,7 @@ public:
 
   
     bool is_valid(int r, int c) const {  // Check if placing a number at (r, c) is valid
-        char num = grid[r][c];
-
+        char num = grid[r][c]; //Checks if placing num at row r, column c is valid
      
         for (int j = 0; j < 9; j++) {   // Check row
             if (j != c && grid[r][j] == num) return false;
@@ -69,8 +68,8 @@ public:
 
      
         int boxRow = r - r % 3;   // Check 3x3 box
-        int boxCol = c - c % 3;
-        for (int i = 0; i < 3; i++) {
+        int boxCol = c - c % 3; // col
+        for (int i = 0; i < 3; i++) { //📘 Checks the 3x3 subgrid that the cell belongs to
             for (int j = 0; j < 3; j++) {
                 int ri = boxRow + i;
                 int cj = boxCol + j;
@@ -84,7 +83,7 @@ public:
     
     void solve_recursive(int r, int c) {// Recursive backtracking solver
     
-        if (r == 9) {
+        if (r == 9) { // Base case we reach row 9, the puzzle is complete
             print_matrix();
             std::cout << std::endl;
             solutions++;
@@ -112,7 +111,7 @@ public:
         std::cout << "Puzzle: " << filename << "\n\n";
         print_matrix();
         std::cout << "\nSolutions:\n";
-        solve_recursive(0, 0);
+        solve_recursive(0, 0); // Starts solving from the top-left
 
         if (solutions == 0) {
             std::cout << "No solution found.\n";
@@ -124,7 +123,7 @@ public:
 
 int main() {
     std::vector<std::string> files = {// Main function to run all puzzles
-        "puzzle1.txt",
+        "puzzle1.txt", // all the puzzles
         "puzzle2.txt",
         "puzzle3.txt",
         "puzzle4.txt",
