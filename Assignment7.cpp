@@ -1,120 +1,91 @@
 // EECS 348 Assignment 7
-// Database Query Integration via MySQL Connector
-// Inputs: No input file, runs SQL commands against preloaded tables
-// Output: Console output of query results
+// Author: Alice Mungamuri
+// Description: Executes 12 SQL queries using MySQL Connector/C++ and outputs the results
+// Inputs: No external input file needed
+// Output: Query results printed to terminal
 // Collaborators: None
-// Other sources: MySQL Connector/C++ documentation, ChatGPT
-// Author: Alice J Mungamuri
-// Creation date: April 24, 2025
+// Sources: ChatGPT, MySQL documentation
+// Created: April 24, 2025
 
 #include <iostream>
 #include <stdexcept>
+#include <cppconn/driver.h>
+#include <cppconn/exception.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
 #include <mysql_driver.h>
 #include <mysql_connection.h>
-#include <cppconn/statement.h>
-#include <cppconn/resultset.h>
 
-using namespace std;
-using namespace sql;
-
-// Utility function to run and print SQL queries
-void runQuery(Connection* conn, const string& query, const string& description) {
+void runQuery(sql::Connection* conn, const std::string& label, const std::string& query) {
     try {
-        Statement* stmt = conn->createStatement();
-        ResultSet* res = stmt->executeQuery(query);
+        std::cout << "\n--- " << label << " ---\n";
+        sql::Statement* stmt = conn->createStatement();
+        sql::ResultSet* res = stmt->executeQuery(query);
 
-        cout << "\n--- " << description << " ---\n";
-        ResultSetMetaData* meta = res->getMetaData();
-        int cols = meta->getColumnCount();
-
+        int columns = res->getMetaData()->getColumnCount();
         while (res->next()) {
-            for (int i = 1; i <= cols; i++) {
-                cout << meta->getColumnLabel(i) << ": " << res->getString(i) << " | ";
+            for (int i = 1; i <= columns; ++i) {
+                std::cout << res->getMetaData()->getColumnLabel(i) << ": " << res->getString(i) << " | ";
             }
-            cout << endl;
+            std::cout << "\n";
         }
-
         delete res;
         delete stmt;
-    } catch (SQLException& e) {
-        cerr << "Error running query: " << e.what() << endl;
+    } catch (sql::SQLException& e) {
+        std::cerr << "Error executing query: " << e.what() << std::endl;
     }
 }
 
 int main() {
     try {
-        mysql::MySQL_Driver* driver = mysql::get_mysql_driver_instance();
-        Connection* conn = driver->connect("tcp://127.0.0.1:3306", "root", "rootpass");
-
-        // Replace with your database name (e.g., use 348s25_lxxxxxxx)
+        sql::mysql::MySQL_Driver* driver = sql::mysql::get_mysql_driver_instance();
+        sql::Connection* conn = driver->connect("tcp://127.0.0.1:3306", "root", "rootpass");
         conn->setSchema("assignment7");
 
-        runQuery(conn, "SELECT * FROM Student WHERE StdMajor = 'IS';",
-                 "Students majoring in IS");
+        runQuery(conn, "1. Students majoring in IS", 
+            "SELECT StdFirstName, StdLastName FROM Student WHERE StdMajor = 'IS'");
 
-        runQuery(conn,
-                 "SELECT StdFirstName, StdLastName FROM Student WHERE StdNo IN "
-                 "(SELECT StdNo FROM Enrollment GROUP BY StdNo HAVING COUNT(*) > 2);",
-                 "Students enrolled in more than two courses");
+        runQuery(conn, "2. Students in more than two courses", 
+            "SELECT StdNo FROM Enrollment GROUP BY StdNo HAVING COUNT(*) > 2");
 
-        runQuery(conn,
-                 "SELECT FacFirstName, FacLastName FROM Faculty "
-                 "WHERE FacDept = 'Physics' AND FacHireDate < DATE_SUB(CURDATE(), INTERVAL 5 YEAR);",
-                 "Professors with 5+ years in Physics");
+        runQuery(conn, "3. Professors in Physics for over 5 years", 
+            "SELECT FacFirstName, FacLastName FROM Faculty WHERE FacDept = 'Physics' AND FacHireDate < DATE_SUB(CURDATE(), INTERVAL 5 YEAR)");
 
-        runQuery(conn,
-                 "SELECT StdMajor, COUNT(*) AS Total FROM Student GROUP BY StdMajor HAVING COUNT(*) > 50;",
-                 "Departments with more than 50 students");
+        runQuery(conn, "4. Departments with more than 50 students", 
+            "SELECT StdMajor, COUNT(*) AS Total FROM Student GROUP BY StdMajor HAVING COUNT(*) > 50");
 
-        runQuery(conn,
-                 "SELECT C.CourseNo, C.CrsDesc FROM Course C JOIN Offering O ON C.CourseNo = O.CourseNo "
-                 "JOIN Faculty F ON O.FacNo = F.FacNo "
-                 "WHERE C.CrsDesc LIKE '%Data%' AND F.FacLastName = 'Johnson';",
-                 "Courses with 'Data' taught by Dr. Johnson");
+        runQuery(conn, "5. Courses with 'Data' taught by Dr. Johnson", 
+            "SELECT Course.CourseNo, CrsDesc FROM Course JOIN Offering ON Course.CourseNo = Offering.CourseNo JOIN Faculty ON Offering.FacNo = Faculty.FacNo WHERE CrsDesc LIKE '%Data%' AND FacLastName = 'Johnson'");
 
-        runQuery(conn,
-                 "SELECT StdFirstName, StdLastName FROM Student "
-                 "WHERE StdNo NOT IN (SELECT StdNo FROM Enrollment "
-                 "WHERE OffYear >= 2023);",
-                 "Students not enrolled in the past two semesters");
+        runQuery(conn, "6. Students not enrolled in last two semesters", 
+            "SELECT * FROM Student WHERE StdNo NOT IN (SELECT DISTINCT StdNo FROM Enrollment)");
 
-        runQuery(conn,
-                 "SELECT MAX(StdGPA) FROM Student WHERE StdGPA < "
-                 "(SELECT MAX(StdGPA) FROM Student);",
-                 "Second-highest GPA");
+        runQuery(conn, "7. Second-highest GPA", 
+            "SELECT MAX(StdGPA) AS SecondHighestGPA FROM Student WHERE StdGPA < (SELECT MAX(StdGPA) FROM Student)");
 
-        runQuery(conn,
-                 "SELECT StdFirstName, StdLastName FROM Student S JOIN Faculty F ON S.StdNo = F.FacNo "
-                 "WHERE StdGPA > 3.5;",
-                 "Students who are also teaching assistants with GPA > 3.5");
+        runQuery(conn, "8. Students who are TAs with GPA > 3.5", 
+            "SELECT StdFirstName, StdLastName FROM Student WHERE StdGPA > 3.5 AND StdNo IN (SELECT DISTINCT FacNo FROM Faculty)");
 
-        runQuery(conn,
-                 "SELECT S.StdFirstName, S.StdLastName, C.CourseNo FROM Student S "
-                 "JOIN Enrollment E ON S.StdNo = E.StdNo "
-                 "JOIN Offering O ON E.OfferNo = O.OfferNo "
-                 "JOIN Course C ON O.CourseNo = C.CourseNo "
-                 "WHERE O.OffYear > 2022;",
-                 "Students enrolled after 2022 and their courses");
+        runQuery(conn, "9. Students enrolled after 2022 and their courses", 
+            "SELECT s.StdFirstName, s.StdLastName, c.CrsDesc FROM Student s JOIN Enrollment e ON s.StdNo = e.StdNo JOIN Offering o ON e.OfferNo = o.OfferNo JOIN Course c ON o.CourseNo = c.CourseNo WHERE o.OffYear > 2022");
 
-        runQuery(conn,
-                 "SELECT FacFirstName, FacLastName, FacSalary FROM Faculty "
-                 "ORDER BY FacSalary DESC LIMIT 3;",
-                 "Top 3 highest-paid professors");
+        runQuery(conn, "10. Top 3 highest-paid professors", 
+            "SELECT FacFirstName, FacLastName, FacSalary FROM Faculty ORDER BY FacSalary DESC LIMIT 3");
 
-        Statement* stmt = conn->createStatement();
-        stmt->execute("INSERT INTO Student (StdNo, StdFirstName, StdLastName, StdCity, StdState, StdZip, StdMajor, StdClass, StdGPA) "
-                      "VALUES ('888-88-8888', 'Alice', 'Smith', 'Topeka', 'KS', '66610', 'CS', 'JR', 3.85);");
-        runQuery(conn, "SELECT * FROM Student WHERE StdNo = '888-88-8888';", "Inserted Alice Smith");
+        runQuery(conn, "11. Insert student Alice Smith", 
+            "INSERT INTO Student (StdNo, StdFirstName, StdLastName, StdCity, StdState, StdZip, StdMajor, StdClass, StdGPA) VALUES ('888-88-8888', 'Alice', 'Smith', 'Topeka', 'KS', '66610', 'CS', 'JR', 3.85)");
+        runQuery(conn, "11b. Confirm Alice Smith Insert", 
+            "SELECT * FROM Student WHERE StdNo = '888-88-8888'");
 
-        stmt->execute("UPDATE Student SET StdCity = 'Overland Park', StdZip = '66204' WHERE StdFirstName = 'Bob' AND StdLastName = 'Norbert';");
-        runQuery(conn, "SELECT * FROM Student WHERE StdFirstName = 'Bob' AND StdLastName = 'Norbert';", "Updated Bob Norbert");
+        runQuery(conn, "12. Update Bob Norbert's address", 
+            "UPDATE Student SET StdCity = 'Overland Park', StdZip = '66204' WHERE StdFirstName = 'BOB' AND StdLastName = 'NORBERT'");
+        runQuery(conn, "12b. Confirm Bob Norbert Update", 
+            "SELECT * FROM Student WHERE StdFirstName = 'BOB' AND StdLastName = 'NORBERT'");
 
-        delete stmt;
         delete conn;
-
-    } catch (SQLException& e) {
-        cerr << "Database error: " << e.what() << endl;
+    } catch (sql::SQLException& e) {
+        std::cerr << "Connection failed: " << e.what() << std::endl;
+        return 1;
     }
-
     return 0;
 }
